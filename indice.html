@@ -1,8 +1,604 @@
-índice.html
 <!DOCTYPE html>
-<html>
-<body>
-<h1>Hello World</h1>
-<p>I'm hosted with GitHub Pages.</p>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador Interactivo: Teoría de Partículas en Enjambres de Drones</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Slate & Teal Harmony -->
+    <!-- Application Structure Plan: Se ha diseñado una SPA temática tipo dashboard. El flujo es: 1. Introducción visual con una animación de enjambre. 2. Sección 'Principios' con tarjetas interactivas para explicar los conceptos básicos de la IE. 3. Sección 'PSO Interactivo', el núcleo de la app, que permite a los usuarios manipular los parámetros del algoritmo (w, c1, c2) y ver su efecto en una simulación de lienzo en tiempo real. Esto fomenta el aprendizaje a través de la experimentación. 4. Sección 'Aplicaciones' con pestañas y un gráfico de Chart.js para comparar algoritmos y visualizar formaciones, traduciendo datos y conceptos del informe en elementos visuales digeribles. 5. Sección 'Desafíos y Futuro' para resumir las perspectivas. Esta estructura transforma un informe denso en un viaje de descubrimiento, priorizando la interacción y la comprensión visual sobre la lectura lineal. -->
+    <!-- Visualization & Content Choices: 1. Principios de IE: Info -> Objetivo: Informar -> Viz: Tarjetas interactivas HTML/CSS -> Interacción: Hover/Click -> Justificación: Presentación concisa y atractiva de conceptos clave. 2. Mecanismo PSO: Info -> Objetivo: Explicar/Explorar -> Viz: Simulación en Canvas + Sliders HTML -> Interacción: Manipulación de parámetros en tiempo real -> Justificación: La mejor manera de entender un algoritmo dinámico es viéndolo en acción e influyendo en su comportamiento. 3. Comparativa de Algoritmos (LGPSO): Info -> Objetivo: Comparar -> Viz: Gráfico de barras (Chart.js) -> Interacción: Tooltips en hover -> Justificación: Visualización clara y cuantitativa de la mejora de rendimiento. 4. Formaciones de Drones: Info -> Objetivo: Ilustrar -> Viz: Diagramas HTML/CSS -> Interacción: Toggle para cambiar entre rígida/adaptativa -> Justificación: Demostración simple y efectiva de conceptos espaciales. 5. Desafíos/Futuro: Info -> Objetivo: Resumir -> Viz: Cuadrícula de iconos (Unicode) + texto -> Interacción: Ninguna -> Justificación: Resumen rápido y visualmente organizado. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+            color: #1e293b;
+        }
+        .nav-link {
+            transition: color 0.3s ease, border-color 0.3s ease;
+        }
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .tab-button.active {
+            background-color: #0d9488;
+            color: white;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-slate-800 text-white sticky top-0 z-50 shadow-md">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <span class="font-bold text-xl">🚁 Enjambres Inteligentes</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#principios" class="nav-link text-gray-300 hover:bg-slate-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Principios</a>
+                        <a href="#simulador" class="nav-link text-gray-300 hover:bg-slate-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Simulador PSO</a>
+                        <a href="#aplicaciones" class="nav-link text-gray-300 hover:bg-slate-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Aplicaciones</a>
+                        <a href="#futuro" class="nav-link text-gray-300 hover:bg-slate-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Futuro</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero" class="relative bg-slate-800 text-white py-20 sm:py-28">
+            <div class="absolute inset-0">
+                <canvas id="hero-canvas"></canvas>
+            </div>
+            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">Teoría de Partículas en Enjambres de Drones</h1>
+                <p class="mt-6 max-w-3xl mx-auto text-xl text-slate-300">Una exploración interactiva de cómo la inteligencia artificial, inspirada en la naturaleza, coordina flotas de drones autónomos.</p>
+            </div>
+        </section>
+
+        <section id="principios" class="py-16 sm:py-24 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Principios de la Inteligencia de Enjambre</h2>
+                    <p class="mt-4 text-lg leading-8 text-slate-600 max-w-2xl mx-auto">La coordinación de un enjambre no surge de un líder, sino de reglas simples que cada individuo sigue. Estos principios fundamentales permiten que el comportamiento colectivo complejo emerja de la simplicidad local.</p>
+                </div>
+                <div class="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                    <div class="card bg-slate-50 p-6 rounded-lg border border-slate-200">
+                        <h3 class="text-lg font-semibold text-slate-900">Autoorganización</h3>
+                        <p class="mt-2 text-base text-slate-600">El orden global emerge de interacciones locales sin control central. Los drones ajustan su posición basándose solo en sus vecinos inmediatos para mantener una formación.</p>
+                    </div>
+                    <div class="card bg-slate-50 p-6 rounded-lg border border-slate-200">
+                        <h3 class="text-lg font-semibold text-slate-900">Emergencia</h3>
+                        <p class="mt-2 text-base text-slate-600">Comportamientos complejos, como mapear un área, surgen de reglas simples que sigue cada dron, sin un plan maestro predefinido.</p>
+                    </div>
+                    <div class="card bg-slate-50 p-6 rounded-lg border border-slate-200">
+                        <h3 class="text-lg font-semibold text-slate-900">Estigmergia</h3>
+                        <p class="mt-2 text-base text-slate-600">Comunicación indirecta. Un dron "marca" un área explorada en un mapa digital compartido, guiando a otros a zonas nuevas sin hablar directamente.</p>
+                    </div>
+                    <div class="card bg-slate-50 p-6 rounded-lg border border-slate-200">
+                        <h3 class="text-lg font-semibold text-slate-900">Control Descentralizado</h3>
+                        <p class="mt-2 text-base text-slate-600">No hay un líder. Cada dron toma sus propias decisiones basándose en sus sensores y la información de sus vecinos cercanos.</p>
+                    </div>
+                     <div class="card bg-slate-50 p-6 rounded-lg border border-slate-200">
+                        <h3 class="text-lg font-semibold text-slate-900">Robustez y Tolerancia a Fallos</h3>
+                        <p class="mt-2 text-base text-slate-600">Si un dron falla, el enjambre continúa. Las tareas se redistribuyen automáticamente entre los miembros restantes para completar la misión.</p>
+                    </div>
+                     <div class="card bg-slate-50 p-6 rounded-lg border border-slate-200">
+                        <h3 class="text-lg font-semibold text-slate-900">Escalabilidad</h3>
+                        <p class="mt-2 text-base text-slate-600">Añadir más drones no requiere un rediseño del sistema. El rendimiento a menudo mejora a medida que el enjambre crece.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="simulador" class="py-16 sm:py-24 bg-slate-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="lg:text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Simulador Interactivo de PSO</h2>
+                    <p class="mt-4 max-w-2xl text-lg text-slate-600 lg:mx-auto">El algoritmo de Optimización por Enjambre de Partículas (PSO) guía a los drones. Cada "partícula" (dron) ajusta su trayectoria basándose en su propia mejor experiencia y la mejor experiencia de todo el enjambre. Manipula los parámetros para ver cómo afectan al comportamiento del enjambre en su búsqueda del objetivo (el punto más brillante).</p>
+                </div>
+                <div class="mt-12 lg:grid lg:grid-cols-3 lg:gap-8 items-center">
+                    <div class="lg:col-span-2">
+                         <div class="bg-white rounded-lg shadow-lg aspect-w-1 aspect-h-1">
+                            <canvas id="pso-canvas" class="rounded-lg"></canvas>
+                         </div>
+                    </div>
+                    <div class="mt-8 lg:mt-0">
+                        <h3 class="text-xl font-semibold mb-4 text-slate-800">Parámetros del Enjambre</h3>
+                        <div class="space-y-6 bg-white p-6 rounded-lg shadow-inner">
+                            <div>
+                                <label for="inertia" class="block text-sm font-medium text-slate-700">Inercia (w): <span id="inertia-value" class="font-bold text-teal-600">0.5</span></label>
+                                <input type="range" id="inertia" min="0.1" max="1.0" step="0.1" value="0.5" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                                <p class="text-xs text-slate-500 mt-1">Controla la tendencia a seguir en la misma dirección. Más alto = más exploración.</p>
+                            </div>
+                            <div>
+                                <label for="cognitive" class="block text-sm font-medium text-slate-700">Factor Cognitivo (c1): <span id="cognitive-value" class="font-bold text-teal-600">1.5</span></label>
+                                <input type="range" id="cognitive" min="0" max="4" step="0.1" value="1.5" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                                <p class="text-xs text-slate-500 mt-1">Atracción hacia la mejor posición personal encontrada. Más alto = más "memoria individual".</p>
+                            </div>
+                            <div>
+                                <label for="social" class="block text-sm font-medium text-slate-700">Factor Social (c2): <span id="social-value" class="font-bold text-teal-600">1.5</span></label>
+                                <input type="range" id="social" min="0" max="4" step="0.1" value="1.5" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                                <p class="text-xs text-slate-500 mt-1">Atracción hacia la mejor posición global del enjambre. Más alto = más "influencia grupal".</p>
+                            </div>
+                             <button id="reset-sim" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
+                                Reiniciar Simulación
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="aplicaciones" class="py-16 sm:py-24 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="lg:text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Aplicaciones en el Mundo Real</h2>
+                    <p class="mt-4 max-w-2xl text-lg text-slate-600 lg:mx-auto">Desde la planificación de rutas eficientes hasta la coordinación de formaciones complejas, la inteligencia de enjambre dota a los drones de capacidades extraordinarias. Explora algunas de las aplicaciones clave.</p>
+                </div>
+
+                <div class="mt-12">
+                    <div class="mb-4 border-b border-gray-200">
+                        <nav class="flex -mb-px" aria-label="Tabs">
+                            <button class="tab-button active w-1/3 py-4 px-1 text-center border-b-2 border-teal-500 font-medium text-sm text-teal-600" data-tab="planificacion">
+                                🗺️ Planificación de Rutas
+                            </button>
+                            <button class="tab-button w-1/3 py-4 px-1 text-center border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm" data-tab="formacion">
+                                ✈️ Control de Formación
+                            </button>
+                            <button class="tab-button w-1/3 py-4 px-1 text-center border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm" data-tab="exploracion">
+                                🔬 Otros Algoritmos
+                            </button>
+                        </nav>
+                    </div>
+
+                    <div id="tab-content" class="pt-8">
+                        <div id="planificacion" class="tab-pane active">
+                            <h3 class="text-2xl font-semibold text-center text-slate-800 mb-2">Optimizando la Trayectoria en Entornos Complejos</h3>
+                            <p class="text-center text-slate-600 max-w-3xl mx-auto mb-8">Navegar por una ciudad es un desafío. Se han desarrollado versiones mejoradas de PSO, como LGPSO, que superan significativamente a los algoritmos anteriores en la búsqueda de la ruta más corta y segura, evitando colisiones.</p>
+                            <div class="chart-container">
+                                <canvas id="pathfinding-chart"></canvas>
+                            </div>
+                        </div>
+                        <div id="formacion" class="tab-pane hidden">
+                             <h3 class="text-2xl font-semibold text-center text-slate-800 mb-8">Coordinación y Comportamiento Colectivo</h3>
+                             <div class="grid md:grid-cols-2 gap-8 items-center">
+                                <div>
+                                    <h4 class="text-xl font-semibold text-slate-700 mb-2">Formación Rígida</h4>
+                                    <p class="text-slate-600 mb-4">El enjambre mantiene su forma general (ej. triángulo) mientras se expande o contrae. Es útil en espacios abiertos pero ineficaz en pasajes estrechos.</p>
+                                    <div class="w-full h-40 bg-slate-100 rounded-lg flex items-center justify-center p-4 border-2 border-dashed border-slate-300">
+                                        <div class="flex space-x-8">
+                                            <span class="text-5xl">🚁</span>
+                                            <span class="text-5xl -mt-8">🚁</span>
+                                            <span class="text-5xl">🚁</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="text-xl font-semibold text-slate-700 mb-2">Formación Adaptativa</h4>
+                                    <p class="text-slate-600 mb-4">El enjambre cambia su configuración para adaptarse al entorno, por ejemplo, formando una línea para pasar por un túnel.</p>
+                                    <div class="w-full h-40 bg-slate-100 rounded-lg flex items-center justify-center p-4 border-2 border-dashed border-slate-300">
+                                       <div class="flex items-center space-x-4">
+                                            <span class="text-5xl">🚁</span>
+                                            <span class="text-5xl">🚁</span>
+                                            <span class="text-5xl">🚁</span>
+                                        </div>
+                                    </div>
+                                </div>
+                             </div>
+                        </div>
+                        <div id="exploracion" class="tab-pane hidden">
+                            <h3 class="text-2xl font-semibold text-center text-slate-800 mb-8">Más Allá de PSO: Otras Inspiraciones Naturales</h3>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full bg-white divide-y divide-gray-200 rounded-lg shadow">
+                                    <thead class="bg-slate-50">
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Algoritmo</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Inspiración Biológica</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Fortaleza Principal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200">
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">ACO (Colonia de Hormigas)</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Hormigas buscando comida y dejando rastros de feromonas.</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Excelente para encontrar la ruta más corta en redes (feedback positivo).</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">ABC (Colonia de Abejas)</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Abejas buscando y comunicando la calidad de las fuentes de néctar.</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Fuerte capacidad de búsqueda global con pocos parámetros de control.</td>
+                                        </tr>
+                                         <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">WGWO (Híbrido Lobo-Ballena)</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Caza en manada de lobos grises y la estrategia de red de burbujas de las ballenas.</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Alta precisión en el seguimiento de objetivos aéreos en tiempo real.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="futuro" class="py-16 sm:py-24 bg-slate-100">
+             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Desafíos y el Futuro de los Enjambres</h2>
+                    <p class="mt-4 text-lg leading-8 text-slate-600 max-w-2xl mx-auto">El potencial es inmenso, pero existen obstáculos técnicos y éticos significativos que la investigación actual busca resolver para desbloquear la siguiente generación de sistemas autónomos.</p>
+                </div>
+                 <div class="mt-12 grid gap-8 md:grid-cols-2">
+                    <div>
+                        <h3 class="text-xl font-semibold text-slate-800 mb-4">Desafíos Actuales</h3>
+                         <div class="space-y-4">
+                            <div class="card flex items-start bg-white p-4 rounded-lg">
+                                <span class="text-2xl mr-4">📡</span>
+                                <div>
+                                    <h4 class="font-semibold">Comunicación y Escalabilidad</h4>
+                                    <p class="text-slate-600 text-sm">Mantener una comunicación eficiente a medida que el enjambre crece a cientos o miles de drones.</p>
+                                </div>
+                            </div>
+                            <div class="card flex items-start bg-white p-4 rounded-lg">
+                                <span class="text-2xl mr-4">🔋</span>
+                                <div>
+                                    <h4 class="font-semibold">Autonomía Energética</h4>
+                                    <p class="text-slate-600 text-sm">La duración limitada de la batería sigue siendo una restricción clave para misiones largas.</p>
+                                </div>
+                            </div>
+                             <div class="card flex items-start bg-white p-4 rounded-lg">
+                                <span class="text-2xl mr-4">🛡️</span>
+                                <div>
+                                    <h4 class="font-semibold">Seguridad y Resiliencia</h4>
+                                    <p class="text-slate-600 text-sm">Proteger a los enjambres de ciberataques, interferencias y ataques físicos.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-slate-800 mb-4">Direcciones Futuras</h3>
+                         <div class="space-y-4">
+                            <div class="card flex items-start bg-white p-4 rounded-lg">
+                                <span class="text-2xl mr-4">🤖</span>
+                                <div>
+                                    <h4 class="font-semibold">Aprendizaje por Refuerzo Profundo</h4>
+                                    <p class="text-slate-600 text-sm">Usar DRL para entrenar enjambres que naveguen entornos complejos y dinámicos de forma autónoma.</p>
+                                </div>
+                            </div>
+                            <div class="card flex items-start bg-white p-4 rounded-lg">
+                                <span class="text-2xl mr-4">🌐</span>
+                                <div>
+                                    <h4 class="font-semibold">Enjambres Híbridos</h4>
+                                    <p class="text-slate-600 text-sm">Coordinar drones aéreos, terrestres y marítimos en una única misión multi-dominio.</p>
+                                </div>
+                            </div>
+                            <div class="card flex items-start bg-white p-4 rounded-lg">
+                                <span class="text-2xl mr-4">🧑‍💻</span>
+                                <div>
+                                    <h4 class="font-semibold">Interacción Humano-Enjambre</h4>
+                                    <p class="text-slate-600 text-sm">Crear interfaces intuitivas (VR, voz, gestos) para que un solo operador pueda dirigir un enjambre masivo.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                 </div>
+             </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-800">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-slate-400">Aplicación interactiva creada para visualizar los conceptos del informe "Optimización por Enjambre de Partículas en Enjambres de Drones".</p>
+            <p class="mt-2 text-xs text-slate-500">Contenido basado en el análisis de múltiples fuentes académicas y técnicas.</p>
+        </div>
+    </footer>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+    
+        const heroCanvas = document.getElementById('hero-canvas');
+        const heroCtx = heroCanvas.getContext('2d');
+        let heroParticles;
+
+        function setupHeroCanvas() {
+            heroCanvas.width = heroCanvas.offsetWidth;
+            heroCanvas.height = heroCanvas.offsetHeight;
+            heroParticles = [];
+            const numParticles = Math.floor(heroCanvas.width / 20);
+            for (let i = 0; i < numParticles; i++) {
+                heroParticles.push({
+                    x: Math.random() * heroCanvas.width,
+                    y: Math.random() * heroCanvas.height,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5,
+                    radius: Math.random() * 1.5 + 0.5
+                });
+            }
+        }
+
+        function drawHero() {
+            heroCtx.clearRect(0, 0, heroCanvas.width, heroCanvas.height);
+            heroCtx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+
+            heroParticles.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+
+                if (p.x < 0 || p.x > heroCanvas.width) p.vx *= -1;
+                if (p.y < 0 || p.y > heroCanvas.height) p.vy *= -1;
+
+                heroCtx.beginPath();
+                heroCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                heroCtx.fill();
+            });
+
+            heroParticles.forEach((p1, i) => {
+                for (let j = i + 1; j < heroParticles.length; j++) {
+                    const p2 = heroParticles[j];
+                    const dist = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+                    if (dist < 100) {
+                        heroCtx.strokeStyle = `rgba(255, 255, 255, ${0.1 - dist / 1000})`;
+                        heroCtx.beginPath();
+                        heroCtx.moveTo(p1.x, p1.y);
+                        heroCtx.lineTo(p2.x, p2.y);
+                        heroCtx.stroke();
+                    }
+                }
+            });
+
+            requestAnimationFrame(drawHero);
+        }
+
+        setupHeroCanvas();
+        drawHero();
+        window.addEventListener('resize', setupHeroCanvas);
+
+        const psoCanvas = document.getElementById('pso-canvas');
+        const psoCtx = psoCanvas.getContext('2d');
+        let particles = [];
+        let globalBest = { position: { x: 0, y: 0 }, value: Infinity };
+        const numPSOParticles = 50;
+        let animationFrameId;
+
+        const inertiaSlider = document.getElementById('inertia');
+        const cognitiveSlider = document.getElementById('cognitive');
+        const socialSlider = document.getElementById('social');
+        const inertiaValue = document.getElementById('inertia-value');
+        const cognitiveValue = document.getElementById('cognitive-value');
+        const socialValue = document.getElementById('social-value');
+        const resetBtn = document.getElementById('reset-sim');
+        
+        let w = parseFloat(inertiaSlider.value);
+        let c1 = parseFloat(cognitiveSlider.value);
+        let c2 = parseFloat(socialSlider.value);
+
+        function fitness(x, y) {
+            const term1 = Math.pow(x - globalBest.target.x, 2);
+            const term2 = Math.pow(y - globalBest.target.y, 2);
+            return Math.sqrt(term1 + term2);
+        }
+
+        function initPSO() {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+            psoCanvas.width = psoCanvas.offsetWidth;
+            psoCanvas.height = psoCanvas.offsetWidth; 
+            
+            particles = [];
+            globalBest.target = { x: psoCanvas.width * (0.2 + Math.random() * 0.6), y: psoCanvas.height * (0.2 + Math.random() * 0.6) };
+            globalBest.value = Infinity;
+            
+            for (let i = 0; i < numPSOParticles; i++) {
+                const position = { x: Math.random() * psoCanvas.width, y: Math.random() * psoCanvas.height };
+                const particle = {
+                    position: position,
+                    velocity: { x: (Math.random() - 0.5) * 2, y: (Math.random() - 0.5) * 2 },
+                    best: { position: { ...position }, value: fitness(position.x, position.y) }
+                };
+                particles.push(particle);
+                if (particle.best.value < globalBest.value) {
+                    globalBest.position = { ...particle.best.position };
+                    globalBest.value = particle.best.value;
+                }
+            }
+            animatePSO();
+        }
+
+        function updatePSO() {
+            particles.forEach(p => {
+                const r1 = Math.random();
+                const r2 = Math.random();
+                
+                p.velocity.x = w * p.velocity.x + 
+                               c1 * r1 * (p.best.position.x - p.position.x) + 
+                               c2 * r2 * (globalBest.position.x - p.position.x);
+                p.velocity.y = w * p.velocity.y +
+                               c1 * r1 * (p.best.position.y - p.position.y) +
+                               c2 * r2 * (globalBest.position.y - p.position.y);
+                
+                const speed = Math.hypot(p.velocity.x, p.velocity.y);
+                const maxSpeed = 5;
+                if(speed > maxSpeed){
+                    p.velocity.x = (p.velocity.x / speed) * maxSpeed;
+                    p.velocity.y = (p.velocity.y / speed) * maxSpeed;
+                }
+
+                p.position.x += p.velocity.x;
+                p.position.y += p.velocity.y;
+
+                if (p.position.x < 0) { p.position.x = 0; p.velocity.x *= -0.5; }
+                if (p.position.x > psoCanvas.width) { p.position.x = psoCanvas.width; p.velocity.x *= -0.5; }
+                if (p.position.y < 0) { p.position.y = 0; p.velocity.y *= -0.5; }
+                if (p.position.y > psoCanvas.height) { p.position.y = psoCanvas.height; p.velocity.y *= -0.5; }
+
+                const currentValue = fitness(p.position.x, p.position.y);
+                if (currentValue < p.best.value) {
+                    p.best.position = { ...p.position };
+                    p.best.value = currentValue;
+                }
+                if (currentValue < globalBest.value) {
+                    globalBest.position = { ...p.position };
+                    globalBest.value = currentValue;
+                }
+            });
+        }
+        
+        function drawPSO() {
+            psoCtx.clearRect(0, 0, psoCanvas.width, psoCanvas.height);
+            psoCtx.fillStyle = '#1e293b';
+            psoCtx.fillRect(0, 0, psoCanvas.width, psoCanvas.height);
+            
+            const gradient = psoCtx.createRadialGradient(globalBest.target.x, globalBest.target.y, 0, globalBest.target.x, globalBest.target.y, 100);
+            gradient.addColorStop(0, 'rgba(255, 255, 0, 0.8)');
+            gradient.addColorStop(1, 'rgba(255, 255, 0, 0)');
+            psoCtx.fillStyle = gradient;
+            psoCtx.beginPath();
+            psoCtx.arc(globalBest.target.x, globalBest.target.y, 100, 0, Math.PI * 2);
+            psoCtx.fill();
+            
+            psoCtx.fillStyle = '#f59e0b';
+            psoCtx.beginPath();
+            psoCtx.arc(globalBest.target.x, globalBest.target.y, 5, 0, Math.PI * 2);
+            psoCtx.fill();
+
+            particles.forEach(p => {
+                psoCtx.fillStyle = 'rgba(13, 148, 136, 0.8)';
+                psoCtx.beginPath();
+                psoCtx.arc(p.position.x, p.position.y, 3, 0, Math.PI * 2);
+                psoCtx.fill();
+            });
+        }
+        
+        function animatePSO() {
+            updatePSO();
+            drawPSO();
+            animationFrameId = requestAnimationFrame(animatePSO);
+        }
+
+        inertiaSlider.addEventListener('input', (e) => {
+            w = parseFloat(e.target.value);
+            inertiaValue.textContent = w.toFixed(1);
+        });
+        cognitiveSlider.addEventListener('input', (e) => {
+            c1 = parseFloat(e.target.value);
+            cognitiveValue.textContent = c1.toFixed(1);
+        });
+        socialSlider.addEventListener('input', (e) => {
+            c2 = parseFloat(e.target.value);
+            socialValue.textContent = c2.toFixed(1);
+        });
+        resetBtn.addEventListener('click', initPSO);
+        
+        initPSO();
+        window.addEventListener('resize', initPSO);
+
+        const ctxPath = document.getElementById('pathfinding-chart').getContext('2d');
+        const pathfindingChart = new Chart(ctxPath, {
+            type: 'bar',
+            data: {
+                labels: ['PSO Clásico', 'GAPSO', 'LGPSO (Mejorado)'],
+                datasets: [{
+                    label: 'Coste Relativo de Ruta (Menor es Mejor)',
+                    data: [123, 118, 100],
+                    backgroundColor: [
+                        'rgba(100, 116, 139, 0.6)',
+                        'rgba(20, 184, 166, 0.6)',
+                        'rgba(13, 148, 136, 0.8)',
+                    ],
+                    borderColor: [
+                        'rgba(100, 116, 139, 1)',
+                        'rgba(20, 184, 166, 1)',
+                        'rgba(13, 148, 136, 1)',
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Comparación de Eficiencia en Planificación de Rutas',
+                        font: { size: 16 }
+                    },
+                    tooltip: {
+                       callbacks: {
+                           label: function(context) {
+                               let label = context.dataset.label || '';
+                               if (label) {
+                                   label += ': ';
+                               }
+                               if (context.parsed.y !== null) {
+                                   label += context.parsed.y;
+                               }
+                               return label;
+                           }
+                       }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Coste/Distancia (Normalizado)'
+                        }
+                    }
+                }
+            }
+        });
+
+        const tabs = document.querySelectorAll('.tab-button');
+        const panes = document.querySelectorAll('.tab-pane');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(item => {
+                    item.classList.remove('active', 'text-teal-600', 'border-teal-500');
+                    item.classList.add('text-gray-500', 'border-transparent');
+                });
+                panes.forEach(pane => {
+                    pane.classList.add('hidden');
+                });
+
+                tab.classList.add('active', 'text-teal-600', 'border-teal-500');
+                tab.classList.remove('text-gray-500', 'border-transparent');
+                
+                const targetPane = document.getElementById(tab.dataset.tab);
+                targetPane.classList.remove('hidden');
+            });
+        });
+    });
+    </script>
 </body>
-</html
+</html>
