@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagrama Conceptual: Simulación de Enjambres de Drones</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Slate & Teal Harmony -->
+    <!-- Application Structure Plan: La aplicación presenta un diagrama conceptual central de la simulación de enjambres de drones. El diseño se centra en un hexágono principal rodeado por cinco hexágonos satélite que representan los componentes clave del sistema (PX4-Autopilot, Gazebo, ROS 2, Simulink, Entorno Dinámico). Las conexiones entre ellos se muestran con líneas y flechas, y se incluyen mini-drones para visualizar el enjambre. La estructura es un diseño tipo infografía para facilitar la comprensión de las interrelaciones y el flujo de información en un solo vistazo. Se incluye una sección de beneficios para resaltar la importancia de la simulación. -->
+    <!-- Visualization & Content Choices: 1. Hexágonos: Implementados con `div` y `clip-path` para la forma hexagonal precisa, y colores específicos de Tailwind. 2. Iconos: Utilización de caracteres Unicode dentro de los hexágonos. 3. Conexiones (Flechas): Creación de líneas y flechas con `div`s y estilos CSS (`transform: rotate`, `background-color`) para indicar el flujo de información. 4. Mini-drones: Representados con iconos Unicode. 5. Beneficios: Presentados como tarjetas de texto con iconos Unicode. Todo el diseño se realiza con HTML y Tailwind CSS, sin usar SVG ni Mermaid JS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9; /* light background consistent with previous */
+            color: #1e293b; /* dark text for contrast */
+        }
+        .hexagon {
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: absolute; /* For positioning relative to parent */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            font-size: 0.875rem; /* text-sm default */
+            line-height: 1.25rem; /* leading-tight */
+            padding: 0.5rem; /* p-2 */
+        }
+        .hexagon:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+        .arrow {
+            position: absolute;
+            background-color: #334155; /* Slate-700 for arrows */
+            height: 2px;
+            transform-origin: 0% 50%;
+        }
+        .arrow::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 5px 0 5px 8px; /* Arrowhead size */
+            border-color: transparent transparent transparent #334155;
+            top: -4px; /* Adjust to center */
+            right: -8px; /* Position at the end of the arrow */
+        }
+        .main-hexagon {
+            font-size: 1.125rem; /* text-lg */
+            font-weight: 700; /* font-bold */
+        }
+    </style>
+</head>
+<body class="antialiased overflow-hidden">
+
+    <header class="bg-slate-800 text-white py-6 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <h1 class="text-3xl font-extrabold tracking-tight">Diagrama Conceptual: Simulación de Enjambres de Drones</h1>
+            <p class="mt-2 text-slate-300">Explorando la arquitectura de un sistema de simulación de drones basado en IA</p>
+        </div>
+    </header>
+
+    <main class="relative flex items-center justify-center min-h-[calc(100vh-8rem)] p-4 overflow-hidden">
+        <div class="relative w-[800px] h-[600px] max-w-full max-h-full flex items-center justify-center">
+
+            <!-- Hexágono Central -->
+            <div class="hexagon w-40 h-40 bg-blue-300 text-slate-800 main-hexagon p-4 shadow-lg" style="--tw-bg-opacity: 1; background-color: #87CEEB; z-index: 10;">
+                <p>Simulación de Enjambre de Minidrones con 'Neural Swarm' e IA</p>
+            </div>
+
+            <!-- PX4-Autopilot Hexagon -->
+            <div class="hexagon w-28 h-28 bg-emerald-300 text-slate-800 p-2 shadow-lg" style="--tw-bg-opacity: 1; background-color: #C6F4D9; top: 10%; left: 65%; transform: translate(-50%, 0) rotate(0deg); z-index: 5;">
+                <span class="text-2xl mb-1">🕹️</span>PX4-Autopilot<br>(Control de Vuelo)
+            </div>
+
+            <!-- Gazebo Hexagon -->
+            <div class="hexagon w-28 h-28 bg-blue-700 text-white p-2 shadow-lg" style="--tw-bg-opacity: 1; background-color: #3498DB; bottom: 10%; left: 65%; transform: translate(-50%, 0) rotate(0deg); z-index: 5;">
+                <span class="text-2xl mb-1">🎥</span>Gazebo<br>(Simulación Entorno)
+            </div>
+
+            <!-- ROS 2 Hexagon -->
+            <div class="hexagon w-28 h-28 bg-blue-300 text-slate-800 p-2 shadow-lg" style="--tw-bg-opacity: 1; background-color: #87CEEB; left: 15%; top: 35%; transform: translate(0, -50%) rotate(0deg); z-index: 5;">
+                <span class="text-2xl mb-1">🔗</span>ROS 2<br>(Comunicación)
+            </div>
+
+            <!-- Simulink Hexagon -->
+            <div class="hexagon w-28 h-28 bg-blue-700 text-white p-2 shadow-lg" style="--tw-bg-opacity: 1; background-color: #3498DB; right: 15%; top: 35%; transform: translate(0, -50%) rotate(0deg); z-index: 5;">
+                <span class="text-2xl mb-1">🧠</span>Simulink<br>(Algoritmos IA)
+            </div>
+
+            <!-- Entorno Dinámico Hexagon -->
+            <div class="hexagon w-28 h-28 bg-amber-700 text-white p-2 shadow-lg" style="--tw-bg-opacity: 1; background-color: #964B00; left: 15%; top: 65%; transform: translate(0, -50%) rotate(0deg); z-index: 5;">
+                 <span class="text-2xl mb-1">🚧</span>Entorno Dinámico<br>(Obstáculos/Cambios)
+            </div>
+
+
+            <!-- Arrows -->
+            <!-- PX4-Autopilot to ROS 2 -->
+            <div class="arrow" style="width: 170px; left: 38%; top: 25%; transform: rotate(-15deg);"></div>
+            <!-- PX4-Autopilot to Simulink -->
+            <div class="arrow" style="width: 170px; left: 45%; top: 25%; transform: rotate(15deg); transform-origin: 100% 50%;"></div>
+
+            <!-- Gazebo to ROS 2 -->
+            <div class="arrow" style="width: 170px; left: 38%; top: 75%; transform: rotate(15deg);"></div>
+            <!-- Gazebo to Entorno Dinámico -->
+            <div class="arrow" style="width: 170px; left: 45%; top: 75%; transform: rotate(-15deg); transform-origin: 100% 50%;"></div>
+
+            <!-- ROS 2 to Simulink -->
+            <div class="arrow" style="width: 120px; left: 34%; top: 50%; transform: rotate(0deg);"></div>
+            <!-- ROS 2 to Entorno Dinámico -->
+            <div class="arrow" style="width: 120px; left: 25%; top: 58%; transform: rotate(45deg);"></div>
+
+
+            <!-- Mini-Drones -->
+            <span class="absolute text-3xl" style="top: 30%; left: 48%;">🚁</span>
+            <span class="absolute text-3xl" style="top: 70%; left: 40%;">🚁</span>
+            <span class="absolute text-3xl" style="top: 70%; left: 60%;">🚁</span>
+
+        </div>
+    </main>
+
+    <section class="bg-white py-12 px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-2xl font-bold text-slate-900 mb-6">Beneficios de la Simulación de Enjambres</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-slate-50 p-6 rounded-lg shadow">
+                    <span class="text-4xl block mb-2">🔄</span>
+                    <h3 class="font-semibold text-slate-800">Flexibilidad</h3>
+                    <p class="text-slate-600 text-sm">Prueba configuraciones y escenarios ilimitados sin riesgos físicos.</p>
+                </div>
+                <div class="bg-slate-50 p-6 rounded-lg shadow">
+                    <span class="text-4xl block mb-2">📈</span>
+                    <h3 class="font-semibold text-slate-800">Escalabilidad</h3>
+                    <p class="text-slate-600 text-sm">Simula enjambres de cientos o miles de drones a bajo costo.</p>
+                </div>
+                <div class="bg-slate-50 p-6 rounded-lg shadow">
+                    <span class="text-4xl block mb-2">🔒</span>
+                    <h3 class="font-semibold text-slate-800">Seguridad</h3>
+                    <p class="text-slate-600 text-sm">Identifica y corrige fallos de diseño antes del despliegue real.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-slate-800">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-slate-400">Diseño conceptual para la simulación de enjambres de drones, basado en los principios de IA.</p>
+        </div>
+    </footer>
+</body>
+</html>
